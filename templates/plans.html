@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="title">Plans</h1>
+
+    <a href="{{ url_for('config.add_plan') }}" class="button is-primary">Add Plan</a>
+
+    <table class="table is-striped">
+      <thead>
+      <tr>
+        <th>Plan Name</th>
+        <th>Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if plans.count() > 0 %}
+        {% for plan in plans %}
+          <tr>
+            <td>
+              <a href="{{ url_for('config.config_plan', plan_id=plan.id) }}">{{ plan.name }}</a>
+            </td>
+            <td>
+              <a href="{{ url_for('config.delete_plan', plan_id=plan.id) }}" class="delete"></a>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td>No plans exist</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+
+    <a href="{{ url_for('config.config') }}" class="button">
+      <span class="icon">
+        <span class="fa fa-chevron-left"></span>
+      </span>
+      <span>Configuration</span>
+    </a>
+  </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cloudberry Backup</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block header %}{% endblock %}
+</head>
+<body>
+  <section class="section">
+    {% block content %}{% endblock %}
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block js %}{% endblock %}
+</body>
+</html>

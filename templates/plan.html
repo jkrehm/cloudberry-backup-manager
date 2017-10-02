@@ -1,0 +1,338 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <form action="{{ url_for('config.update_plan') }}" method="post">
+      {% if plan %}
+        <input type="hidden" name="plan_id" value="{{ plan.id }}">
+      {% endif %}
+
+      <div class="field">
+        <label for="name" class="label">*Plan Name</label>
+        <div class="control">
+          <input type="text" id="name" name="name" class="input" placeholder="Plan Name"
+                 value="{{ plan.name if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="account_id" class="label">*Account</label>
+        <div class="control">
+          <div class="select">
+            <select name="account_id" id="account_id">
+              {% for account in accounts %}
+                <option value="{{ account.id }}" {{ 'selected' if plan and plan.account_id == account.id else '' }}>
+                  {{ account.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="enabled" class="label">
+            <input type="checkbox" id="enabled" name="enabled"
+                {{ 'checked' if plan and plan.enabled else '' }}>
+            Enabled
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="path" class="label">*File/Directory Path to Backup</label>
+        <div class="control">
+          <input type="text" id="path" name="path" class="input" placeholder="File/Directory Path"
+                 value="{{ plan.path if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="exclude_sys" class="label">
+            <input type="checkbox" id="exclude_sys" name="exclude_sys"
+                {{ 'checked' if (plan and plan.exclude_sys) or not plan else '' }}>
+            Exclude system and hidden files
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="include_empty" class="label">
+            <input type="checkbox" id="include_empty" name="include_empty"
+                {{ 'checked' if plan and plan.include_empty else '' }}>
+            Backup empty folders
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="include_masks" class="label">Include files mask</label>
+        <div class="control">
+          <input type="text" id="include_masks" name="include_masks" class="input"
+                 placeholder="e.g. *.doc, *.xls" value="{{ plan.include_masks if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="exclude_masks" class="label">Exclude files mask</label>
+        <div class="control">
+          <input type="text" id="exclude_masks" name="exclude_masks" class="input"
+                 placeholder="e.g. *.doc, *.xls" value="{{ plan.exclude_masks if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="encryption" class="label">Encryption Algorithm</label>
+        <div class="control">
+          <div class="select">
+            <select name="encryption" id="encryption" data-control="encryption">
+              <option value="" {{ 'selected' if not plan or plan.encryption == '' else '' }}>None</option>
+              {% for option in ['AES_128', 'AES_192', 'AES_256'] %}
+                <option value="{{ option }}" {{ 'selected' if plan and plan.encryption == option else '' }}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.encryption else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="encryption"
+           data-values='{{ ['AES_128', 'AES_192', 'AES_256']|tojson }}'>
+        <label for="encryption_password" class="label">Encryption Password</label>
+        <div class="control">
+          <input type="password" id="encryption_password" name="encryption_password" class="input"
+                 placeholder="***"
+                 value="{{ plan.encryption_password if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="purge" class="label">
+            <input type="checkbox" id="purge" name="purge" data-control="purge"
+                {{ 'checked' if plan and plan.purge else '' }}>
+            Purge old versions
+          </label>
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.purge else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="purge">
+        <label for="purge_recurrence" class="label">
+          Purge versions that are older than period (except latest version)
+        </label>
+        <div class="control">
+          <input type="text" id="purge_recurrence" name="purge_recurrence" class="input"
+                 placeholder="e.g. 1d(day), 1w(week), 1m(month)"
+                 value="{{ plan.purge_recurrence if plan else '' }}">
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.purge else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="purge">
+        <div class="control">
+          <label for="keep_last_version" class="label">
+            <input type="checkbox" id="keep_last_version" name="keep_last_version"
+                {{ 'checked' if plan and plan.keep_last_version else '' }}>
+            Always keep the last version
+          </label>
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.purge else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="purge">
+        <label for="keep" class="label">Keep limited number of versions</label>
+        <div class="control">
+          <input type="number" id="keep" name="keep" class="input"
+                 placeholder="Number of versions"
+                 value="{{ plan.keep if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="delete" class="label">
+            <input type="checkbox" id="delete" name="delete" data-control="delete"
+                {{ 'checked' if plan and plan.delete else '' }}>
+            Delete locally deleted files from storage
+          </label>
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.delete else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="delete">
+        <label for="delete_delay" class="label">Delete locally deleted files delay</label>
+        <div class="control">
+          <input type="number" id="delete_delay" name="delete_delay" class="input"
+                 placeholder="Number of days"
+                 value="{{ plan.delete_delay if plan else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="repeat_every" class="label">Recurring type</label>
+        <div class="control">
+          <div class="select">
+            <select name="repeat_every" id="repeat_every" data-control="every">
+              {% for option in ['day', 'week', 'month', 'dayofmonth'] %}
+                <option value="{{ option }}" {{ 'selected' if plan and plan.repeat_every == option else '' }}>
+                  {{ option | title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="repeat_at" class="label">Datetime/time of schedule</label>
+        <div class="control">
+          <input type="text" id="repeat_at" name="repeat_at" class="input"
+                 placeholder="e.g. 16.02.2015 12:32 or 12:32"
+                 value="{{ plan.repeat_at if plan else '' }}">
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.repeat_every == 'dayofmonth' else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="every" data-values='{{ ['dayofmonth']|tojson }}'>
+        <label for="repeat_day" class="label">Day for 'Day of month' schedule</label>
+        <div class="control">
+          <input type="number" id="repeat_day" name="repeat_day" class="input"
+                 placeholder="e.g. 1-31"
+                 value="{{ plan.repeat_day if plan else '' }}">
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.repeat_every == 'week' else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="every" data-values='{{ ['week']|tojson }}'>
+        <label for="weekday" class="label">Day(s) of week for weekly schedule</label>
+        <div class="control">
+          <div class="select is-multiple">
+            <select name="weekday" id="weekday" multiple>
+              {% for option in ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'] %}
+                <option value="{{ option }}" {{ 'selected' if plan and plan.weekday == option else '' }}>
+                  {{ option | title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+    {#  <div class="field">#}
+    {#    <label for="weekday" class="label">Day for 'Day of month' schedule</label>#}
+    {#    <div class="control">#}
+    {#      <input type="number" id="weekday" name="weekday" class="input"#}
+    {#             placeholder="e.g. 1-6" min="1" max="6"#}
+    {#             value="{{ plan.weekday if plan else '' }}">#}
+    {#    </div>#}
+    {#  </div>#}
+
+      {% set hidden = '' if plan and plan.repeat_every == 'month' else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="every" data-values='{{ ['month']|tojson }}'>
+        <label for="weeknumber" class="label">Number of week</label>
+        <div class="control">
+          <div class="select">
+            <select name="weeknumber" id="weeknumber">
+              {% for option in ['First', 'Second', 'Third', 'Fourth', 'Penultimate', 'Last'] %}
+                <option value="{{ option }}" {{ 'selected' if plan and plan.weeknumber == option else '' }}>
+                  {{ option | title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_rrs" class="label">
+            <input type="checkbox" id="use_rrs" name="use_rrs"
+                {{ 'checked' if plan and plan.use_rrs else '' }}>
+            Use Reduced Redundancy Storage
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_ia" class="label">
+            <input type="checkbox" id="use_ia" name="use_ia"
+                {{ 'checked' if plan and plan.use_ia else '' }}>
+            Use Infrequent Access Storage
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_sse" class="label">
+            <input type="checkbox" id="use_sse" name="use_sse"
+                {{ 'checked' if plan and plan.use_sse else '' }}>
+            Use Server-side Encryption
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_sta" class="label">
+            <input type="checkbox" id="use_sta" name="use_sta"
+                {{ 'checked' if plan and plan.use_sta else '' }}>
+            Use Transfer Acceleration
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_compression" class="label">
+            <input type="checkbox" id="use_compression" name="use_compression"
+                {{ 'checked' if plan and plan.use_compression else '' }}>
+            Use Compression
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="notification" class="label">Send Notification</label>
+        <div class="control">
+          <div class="select">
+            <select name="notification" id="notification" data-control="notification">
+              {% for option in ['on', 'off', 'errorOnly'] %}
+                <option value="{{ option }}" {{ 'selected' if plan and plan.notification == option else '' }}>
+                  {{ option | title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {% set hidden = '' if plan and plan.notification != 'off' else 'is-hidden' %}
+      <div class="field {{ hidden }}" data-related="notification"
+           data-values='{{ ['on', 'errorOnly']|tojson }}'>
+        <label for="subject" class="label">Subject of notification email</label>
+        <div class="control">
+          <input type="text" id="subject" name="subject" class="input"
+                 placeholder="Notification subject"
+                 value="{{ plan.subject if plan else '' }}">
+        </div>
+        <p class="help">
+          Available macros:
+          <code>%COMPUTER_NAME%</code>
+          <code>%RESULT%</code>
+          <code>%PLAN_NAME%</code>
+        </p>
+      </div>
+
+      <button class="button is-primary">Submit</button>
+      <a href="{{ url_for('config.plans') }}" class="button">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

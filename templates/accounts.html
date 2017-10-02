@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="title">Accounts</h1>
+
+    <a href="{{ url_for('config.add_account') }}" class="button is-primary">Add Account</a>
+
+    <table class="table is-striped is-fullwidth">
+      <thead>
+        <tr>
+          <th>Account Name</th>
+          <th class="has-text-right">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if accounts.count() > 0 %}
+          {% for account in accounts %}
+            <tr>
+              <td>
+                <a href="{{ url_for('config.config_account', account_id=account.id) }}">{{ account.name }}</a>
+              </td>
+              <td class="has-text-right">
+                <a href="{{ url_for('config.delete_account', account_id=account.id) }}" class="delete"></a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td>No accounts exist</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <a href="{{ url_for('config.config') }}" class="button">
+      <span class="icon">
+        <span class="fa fa-chevron-left"></span>
+      </span>
+      <span>Configuration</span>
+    </a>
+  </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="title">Settings</h1>
+
+    <form action="{{ url_for('config.update_settings') }}" method="post">
+      <div class="field">
+        <label for="cbb_path" class="label">Path to CBB</label>
+        <div class="control">
+          <input type="text" id="cbb_path" name="cbb_path" class="input"
+                 placeholder="e.g. /opt/local/Cloudberry Backup/bin/cbb"
+                 value="{{ settings.cbb_path if settings else '' }}">
+        </div>
+      </div>
+
+      <button class="button is-primary">Submit</button>
+      <a href="{{ url_for('config.config') }}" class="button">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

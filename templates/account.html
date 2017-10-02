@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <form action="{{ url_for('config.update_account') }}" method="post">
+      {% if account %}
+        <input type="hidden" name="account_id" value="{{ account.id }}">
+      {% endif %}
+
+      <div class="field">
+        <label for="name" class="label">Name</label>
+        <div class="control">
+          <input type="text" id="name" name="name" class="input"
+                 placeholder="Account Name" value="{{ account.name if account else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="enabled" class="label">
+            <input type="checkbox" id="enabled" name="enabled"
+                {{ 'checked' if account and account.enabled else '' }}>
+            Enabled
+          </label>
+        </div>
+      </div>
+
+      <input type="hidden" name="type" value="AmazonS3">
+
+      <div class="field">
+        <label for="access_key" class="label">Access Key</label>
+        <div class="control">
+          <input type="text" id="access_key" name="access_key" class="input"
+                 placeholder="Access Key" value="{{ account.access_key if account else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="secret_key" class="label">Secret Key</label>
+        <div class="control">
+          <input type="password" id="secret_key" name="secret_key" class="input"
+                 placeholder="Secret Key" value="{{ account.secret_key if account else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bucket" class="label">Bucket</label>
+        <div class="control">
+          <input type="text" id="bucket" name="bucket" class="input"
+                 placeholder="Bucket" value="{{ account.bucket if account else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="prefix" class="label">Prefix</label>
+        <div class="control">
+          <input type="text" id="prefix" name="prefix" class="input"
+                 placeholder="Prefix" value="{{ account.prefix if account else '' }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <label for="use_ssl" class="label">
+            <input type="checkbox" id="use_ssl" name="use_ssl"
+                {{ 'checked' if account and account.use_ssl else '' }}>
+            Use SSL
+          </label>
+        </div>
+      </div>
+
+      <button class="button is-primary">Submit</button>
+      <a href="{{ url_for('config.accounts') }}" class="button">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

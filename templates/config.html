@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>Configuration</h1>
+    <ul>
+      <li>
+        <a href="{{ url_for('config.settings') }}">Settings</a>
+      </li>
+      <li>
+        <a href="{{ url_for('config.accounts') }}">Accounts</a>
+      </li>
+      <li>
+        <a href="{{ url_for('config.plans') }}">Plans</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
