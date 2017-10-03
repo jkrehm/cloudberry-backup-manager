@@ -1,51 +1,50 @@
 # -*- coding: utf-8 -*-
 from typing import List
 
-from sqlalchemy import *
-from sqlalchemy.orm import relationship
+# from sqlalchemy import *
+# from sqlalchemy.orm import relationship
 
-import db
+from db import db
 from models.account import Account
-from models.base import Base
 from models.plan_exclusion import PlanExclusion
 from models.settings import Settings
 
 
-class Plan(Base):
+class Plan(db.Model):
     __tablename__ = 'plan'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), unique=True)
-    account_id = Column(String(64), ForeignKey('account.id'))
-    enabled = Column(Boolean)
-    path = Column(String)
-    exclude_sys = Column(Boolean)
-    include_empty = Column(Boolean)
-    include_masks = Column(String)
-    exclude_masks = Column(String)
-    encryption = Column(String(10))
-    encryption_password = Column(String)
-    purge = Column(Boolean)
-    purge_recurrence = Column(String(5))
-    keep_last_version = Column(Boolean)
-    keep = Column(Integer)
-    delete = Column(Boolean)
-    delete_delay = Column(Integer)
-    repeat_every = Column(String(10))
-    repeat_at = Column(String(30))
-    repeat_day = Column(Integer)
-    weekday = Column(String(30))
-    weeknumber = Column(String(10))
-    use_rrs = Column(Boolean)
-    use_ia = Column(Boolean)
-    use_sse = Column(Boolean)
-    use_sta = Column(Boolean)
-    use_compression = Column(Boolean)
-    notification = Column(String(10))
-    subject = Column(String(64))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    account_id = db.Column(db.String(64), db.ForeignKey('account.id'))
+    enabled = db.Column(db.Boolean)
+    path = db.Column(db.String)
+    exclude_sys = db.Column(db.Boolean)
+    include_empty = db.Column(db.Boolean)
+    include_masks = db.Column(db.String)
+    exclude_masks = db.Column(db.String)
+    encryption = db.Column(db.String(10))
+    encryption_password = db.Column(db.String)
+    purge = db.Column(db.Boolean)
+    purge_recurrence = db.Column(db.String(5))
+    keep_last_version = db.Column(db.Boolean)
+    keep = db.Column(db.Integer)
+    delete = db.Column(db.Boolean)
+    delete_delay = db.Column(db.Integer)
+    repeat_every = db.Column(db.String(10))
+    repeat_at = db.Column(db.String(30))
+    repeat_day = db.Column(db.Integer)
+    weekday = db.Column(db.String(30))
+    weeknumber = db.Column(db.String(10))
+    use_rrs = db.Column(db.Boolean)
+    use_ia = db.Column(db.Boolean)
+    use_sse = db.Column(db.Boolean)
+    use_sta = db.Column(db.Boolean)
+    use_compression = db.Column(db.Boolean)
+    notification = db.Column(db.String(10))
+    subject = db.Column(db.String(64))
 
-    account = relationship('Account')  # type: Account
-    exclusions = relationship('PlanExclusion')  # type: List[PlanExclusion]
+    account = db.relationship('Account')  # type: Account
+    exclusions = db.relationship('PlanExclusion')  # type: List[PlanExclusion]
 
     def generate_add_command(self):
         settings = db.session.query(Settings).first()
@@ -96,6 +95,43 @@ class Plan(Base):
 
         cmd += ['-notification', self.notification]
         cmd += ['-subject', self.subject]
+
+        # addBackupPlan
+        # -n planName
+        # -a <accountName | accountID>
+        # [-en <yes | no>]
+        # [[-rrs <yes | no>] | [-standardIA <yes | no>]]
+        # [-sse <yes | no>]
+        # [-sta <yes | no>]
+        # -f <pathToFile | pathToDir>
+        # -ef <pathToFile | pathToDir>
+        # [-es <yes | no>]
+        # [-c <yes | no>]
+        # [-ifm Filters| -efm Filters]
+        # [-ea <AES_128 | AES_192 | AES_256 | no > -ep password]
+        # [-bef <yes | no>]
+        # [-purge delete_after_time
+        #   -keepLastVersion <yes | no>
+        #   -keep keep_versions_number]
+        # [-dl <yes
+        #   -dld delete_locally_deleted_delay | no >]
+        # [
+        #   [
+        #       [-every [day, week, month, dayofmonth] <
+        #           -workTime xx:xx-xx:xx
+        #               -recurrencePeriod period |
+        #           -at timeOfDay
+        #       >]
+        #       [-day [1..31]
+        #   ]
+        #   [-weekday list ofWeekDays]
+        #   [-weeknumber weeknumber]
+        # ] |
+        #   -at onceDateTime] ]
+        # [-repeateEvery NumOfMonthes
+        #   -repeatFrom FromDate]
+        # [-notification <errorOnly | on | off>]
+        # [-subject Subject]
 
         return cmd
 

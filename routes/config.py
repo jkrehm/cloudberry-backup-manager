@@ -1,8 +1,8 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from sqlalchemy.exc import IntegrityError
-
-import db
 import models
+
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 
 blueprint = Blueprint('config', __name__)
 
@@ -13,13 +13,13 @@ def config():
 
 
 @blueprint.route('/settings')
-def settings():
+def settings(db: SQLAlchemy):
     settings = db.session.query(models.Settings).first()
     return render_template('settings.html', settings=settings)
 
 
 @blueprint.route('/settings/update', methods=['POST'])
-def update_settings():
+def update_settings(db: SQLAlchemy):
     to_save = request.form.to_dict()
 
     settings = db.session.query(models.Settings).first()
@@ -44,7 +44,7 @@ def update_settings():
 
 
 @blueprint.route('/accounts')
-def accounts():
+def accounts(db: SQLAlchemy):
     accounts = db.session.query(models.Account)
     return render_template('accounts.html', accounts=accounts)
 
@@ -55,7 +55,7 @@ def add_account():
 
 
 @blueprint.route('/account/<string:account_id>')
-def config_account(account_id):
+def config_account(account_id, db: SQLAlchemy):
     account = db.session.query(models.Account).filter(models.Account.id == account_id).first()
     if account is None:
         flash('Account does not exist', category='error')
@@ -64,7 +64,7 @@ def config_account(account_id):
 
 
 @blueprint.route('/account/update', methods=['POST'])
-def update_account():
+def update_account(db: SQLAlchemy):
     to_save = request.form.to_dict()
     updating = 'account_id' in to_save
 
@@ -100,7 +100,7 @@ def update_account():
 
 
 @blueprint.route('/account/delete/<string:account_id>')
-def delete_account(account_id):
+def delete_account(account_id, db: SQLAlchemy):
     account = db.session.query(models.Account).filter(models.Account.id == account_id).first()
     try:
         db.session.delete(account)
@@ -113,30 +113,31 @@ def delete_account(account_id):
 
 
 @blueprint.route('/plans')
-def plans():
+def plans(db: SQLAlchemy):
     plans = db.session.query(models.Plan)
     return render_template('plans.html', plans=plans)
 
 
 @blueprint.route('/plan/add')
-def add_plan():
+def add_plan(db: SQLAlchemy):
     accounts = db.session.query(models.Account).filter(models.Account.enabled)
     return render_template('plan.html', plan=None, accounts=accounts)
 
 
 @blueprint.route('/plan/<string:plan_id>')
-def config_plan(plan_id):
+def config_plan(plan_id, db: SQLAlchemy):
     plan = db.session.query(models.Plan).filter(models.Plan.id == plan_id)\
         .first()  # type: models.Plan
     if plan is None:
         flash('Plan does not exist', category='error')
         return redirect(url_for('config.plans'))
+    cmd = plan.generate_add_command()
     accounts = db.session.query(models.Account).filter(models.Account.enabled)
     return render_template('plan.html', plan=plan, accounts=accounts)
 
 
 @blueprint.route('/update/plan', methods=['POST'])
-def update_plan():
+def update_plan(db: SQLAlchemy):
     to_save = request.form.to_dict()
     updating = 'plan_id' in to_save
 
@@ -192,7 +193,7 @@ def update_plan():
 
 
 @blueprint.route('/plan/delete/<plan_id>')
-def delete_plan(plan_id):
+def delete_plan(plan_id, db: SQLAlchemy):
     plan = db.session.query(models.Plan).filter(models.Plan.id == plan_id).first()
     try:
         db.session.delete(plan)

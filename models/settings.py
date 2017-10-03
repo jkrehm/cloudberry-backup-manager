@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from models.base import Base
-from sqlalchemy import *
+from db import db
 
 
-class Settings(Base):
+class Settings(db.Model):
     __tablename__ = 'settings'
 
-    id = Column(Integer, primary_key=True)
-    cbb_path = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    cbb_path = db.Column(db.String)

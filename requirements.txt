@@ -3,6 +3,9 @@ botocore==1.7.20
 click==6.7
 docutils==0.14
 Flask==0.12.2
+Flask-Injector==0.10.0
+Flask-SQLAlchemy==2.3.0
+injector==0.13.1
 itsdangerous==0.24
 Jinja2==2.9.6
 jmespath==0.9.3
@@ -12,4 +15,5 @@ python-dateutil==2.6.1
 s3transfer==0.1.11
 six==1.11.0
 SQLAlchemy==1.1.14
+typing==3.6.2
 Werkzeug==0.12.2
