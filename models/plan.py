@@ -52,52 +52,52 @@ class Plan(Base):
 
         cmd = [
             settings.cbb_path,
-            'addBackupPlan',
-            '-n "' + self.name + '"',
-            '-a "' + self.account.name + '"',
-            '-en ' + 'yes' if self.enabled else 'no',
-            '-rrs ' + 'yes' if self.use_rrs else 'no',
-            '-standardIA ' + 'yes' if self.use_ia else 'no',
-            '-sse ' + 'yes' if self.use_sse else 'no',
-            '-sta ' + 'yes' if self.use_sta else 'no',
-            '-f "' + self.path + '"'
+            'addBackupPlan'
         ]
+        cmd += ['-n', self.name]
+        cmd += ['-a', self.account.name]
+        cmd += ['-en ', 'yes' if self.enabled else 'no']
+        cmd += ['-rrs ', 'yes' if self.use_rrs else 'no']
+        cmd += ['-standardIA ', 'yes' if self.use_ia else 'no']
+        cmd += ['-sse ', 'yes' if self.use_sse else 'no']
+        cmd += ['-sta ', 'yes' if self.use_sta else 'no']
+        cmd += ['-f', self.path] 
 
         for exclusion in self.exclusions:
-            cmd.append('-ef "' + exclusion.path + '"')
+            cmd += ['-ef', exclusion.path]
 
-        cmd.append('-es ' + 'yes' if self.exclude_sys else 'no')
-        cmd.append('-c ' + 'yes' if self.use_compression else 'no')
+        cmd += ['-es ', 'yes' if self.exclude_sys else 'no']
+        cmd += ['-c ', 'yes' if self.use_compression else 'no']
 
         if self.include_masks:
-            cmd.append('-ifm "' + self.include_masks + '"')
+            cmd += ['-ifm', self.include_masks]
 
         if self.exclude_masks:
-            cmd.append('-efm "' + self.exclude_masks + '"')
+            cmd += ['-efm', self.exclude_masks]
 
         if self.encryption:
-            cmd.append('-ea "' + self.encryption + '"')
-            cmd.append('-ep "' + self.encryption_password + '"')
+            cmd += ['-ea', self.encryption]
+            cmd += ['-ep', self.encryption_password]
 
-        cmd.append('-bef ' + 'yes' if self.include_empty else 'no')
+        cmd += ['-bef ', 'yes' if self.include_empty else 'no']
 
         if self.purge:
-            cmd.append('-purge "' + self.purge_recurrence + '"')
-            cmd.append('-keepLastVersion ' + 'yes' if self.keep_last_version else 'no')
+            cmd += ['-purge', self.purge_recurrence]
+            cmd += ['-keepLastVersion ', 'yes' if self.keep_last_version else 'no']
             if self.keep > 0:
-                cmd.append('-keep "' + self.keep + '"')
+                cmd += ['-keep', self.keep]
 
-        cmd.append('-dl ' + 'yes' if self.delete else 'n')
+        cmd += ['-dl ', 'yes' if self.delete else 'n']
         if self.delete:
-            cmd.append('-dld "' + str(self.delete_delay) + '"')
+            cmd += ['-dld', str(self.delete_delay)]
 
-        cmd.append('-every "' + self.repeat_every + '"')
-        cmd.append('-at "' + self.repeat_at + '"')
+        cmd += ['-every', self.repeat_every]
+        cmd += ['-at', self.repeat_at]
 
-        cmd.append('-notification "' + self.notification + '"')
-        cmd.append('-subject "' + self.subject + '"')
+        cmd += ['-notification', self.notification]
+        cmd += ['-subject', self.subject]
 
-        return ' '.join(cmd).replace(';', ' ')
+        return cmd
 
     def generate_edit_command(self):
         return 'editBackupPlan'
