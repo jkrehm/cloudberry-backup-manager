@@ -4,7 +4,7 @@
   <div class="container">
     <h1 class="title">Plans</h1>
 
-    <a href="{{ url_for('config.add_plan') }}" class="button is-primary">Add Plan</a>
+    <a href="{{ url_for('config_plan.add_plan') }}" class="button is-primary">Add Plan</a>
 
     <table class="table is-striped">
       <thead>
@@ -18,10 +18,10 @@
         {% for plan in plans %}
           <tr>
             <td>
-              <a href="{{ url_for('config.config_plan', plan_id=plan.id) }}">{{ plan.name }}</a>
+              <a href="{{ url_for('config_plan.config_plan', plan_id=plan.id) }}">{{ plan.name }}</a>
             </td>
             <td>
-              <a href="{{ url_for('config.delete_plan', plan_id=plan.id) }}" class="delete"></a>
+              <a href="{{ url_for('config_plan.delete_plan', plan_id=plan.id) }}" class="delete"></a>
             </td>
           </tr>
         {% endfor %}

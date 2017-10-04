@@ -10,6 +10,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from db import db
 from routes.config import blueprint as config_blueprint
+from routes.config.account import blueprint as config_account_blueprint
+from routes.config.plan import blueprint as config_plan_blueprint
+from routes.config.settings import blueprint as config_settings_blueprint
 
 
 il = logging.getLogger('injector')
@@ -27,6 +30,9 @@ def main():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY', 'b3D$EJAQ4g91U8UPqwZ4yaaSoAsH!V')
     app.register_blueprint(config_blueprint, url_prefix='/config')
+    app.register_blueprint(config_account_blueprint, url_prefix='/config/account')
+    app.register_blueprint(config_plan_blueprint, url_prefix='/config/plan')
+    app.register_blueprint(config_settings_blueprint, url_prefix='/config/settings')
     app.config.update(
         SQLALCHEMY_DATABASE_URI='sqlite:///{0}'.format(db_path),
         SQLALCHEMY_TRACK_MODIFICATIONS=False

@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="container">
-    <form action="{{ url_for('config.update_plan') }}" method="post">
+    <form action="{{ url_for('config_plan.update_plan') }}" method="post">
       {% if plan %}
         <input type="hidden" name="plan_id" value="{{ plan.id }}">
       {% endif %}
@@ -332,7 +332,7 @@
       </div>
 
       <button class="button is-primary">Submit</button>
-      <a href="{{ url_for('config.plans') }}" class="button">Cancel</a>
+      <a href="{{ url_for('config_plan.view_all') }}" class="button">Cancel</a>
     </form>
   </div>
 {% endblock %}
