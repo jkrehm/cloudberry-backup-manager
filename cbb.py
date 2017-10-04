@@ -9,6 +9,7 @@ from injector import Module, Injector, singleton
 from sqlalchemy.ext.declarative import declarative_base
 
 from db import db
+from routes import blueprint as main_blueprint
 from routes.config import blueprint as config_blueprint
 from routes.config.account import blueprint as config_account_blueprint
 from routes.config.plan import blueprint as config_plan_blueprint
@@ -29,6 +30,7 @@ def main():
 
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY', 'b3D$EJAQ4g91U8UPqwZ4yaaSoAsH!V')
+    app.register_blueprint(main_blueprint, url_prefix='/')
     app.register_blueprint(config_blueprint, url_prefix='/config')
     app.register_blueprint(config_account_blueprint, url_prefix='/config/account')
     app.register_blueprint(config_plan_blueprint, url_prefix='/config/plan')
