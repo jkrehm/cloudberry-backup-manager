@@ -4,13 +4,13 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
-blueprint = Blueprint('config_settings', __name__)
+blueprint = Blueprint('config_settings', __name__, template_folder='templates/config')
 
 
 @blueprint.route('')
 def settings(db: SQLAlchemy):
     settings = db.session.query(models.Settings).first()
-    return render_template('settings.html', settings=settings)
+    return render_template('config/settings.html', settings=settings)
 
 
 @blueprint.route('/update', methods=['POST'])

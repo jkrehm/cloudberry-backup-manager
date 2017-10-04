@@ -4,19 +4,19 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
-blueprint = Blueprint('config_plan', __name__)
+blueprint = Blueprint('config_plan', __name__, template_folder='templates/config')
 
 
 @blueprint.route('/all')
 def view_all(db: SQLAlchemy):
     plans = db.session.query(models.Plan)
-    return render_template('plans.html', plans=plans)
+    return render_template('config/plans.html', plans=plans)
 
 
 @blueprint.route('/add')
 def add_plan(db: SQLAlchemy):
     accounts = db.session.query(models.Account).filter(models.Account.enabled)
-    return render_template('plan.html', plan=None, accounts=accounts)
+    return render_template('config/plan.html', plan=None, accounts=accounts)
 
 
 @blueprint.route('/<string:plan_id>')
@@ -28,7 +28,7 @@ def config_plan(plan_id, db: SQLAlchemy):
         return redirect(url_for('config_plan.view_all'))
     cmd = plan.generate_add_command()
     accounts = db.session.query(models.Account).filter(models.Account.enabled)
-    return render_template('plan.html', plan=plan, accounts=accounts)
+    return render_template('config/plan.html', plan=plan, accounts=accounts)
 
 
 @blueprint.route('/update', methods=['POST'])

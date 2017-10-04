@@ -4,18 +4,18 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
-blueprint = Blueprint('config_account', __name__)
+blueprint = Blueprint('config_account', __name__, template_folder='templates/config')
 
 
 @blueprint.route('/all')
 def view_all(db: SQLAlchemy):
     accounts = db.session.query(models.Account)
-    return render_template('accounts.html', accounts=accounts)
+    return render_template('config/accounts.html', accounts=accounts)
 
 
 @blueprint.route('/add')
 def add_account():
-    return render_template('account.html', account=None)
+    return render_template('config/account.html', account=None)
 
 
 @blueprint.route('/<string:account_id>')
@@ -24,7 +24,7 @@ def config_account(account_id, db: SQLAlchemy):
     if account is None:
         flash('Account does not exist', category='error')
         return redirect(url_for('config_account.view_all'))
-    return render_template('account.html', account=account)
+    return render_template('config/account.html', account=account)
 
 
 @blueprint.route('/update', methods=['POST'])
